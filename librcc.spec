@@ -1,18 +1,21 @@
 Name:           librcc
 Version:        0.2.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        RusXMMS Charset Conversion Library
 
 License:        LGPLv2+
 URL:            http://rusxmms.sourceforge.net
 Group:          System Environment/Libraries
-Source0:        http://dside.dyndns.org/files/rusxmms/%{name}-%{version}.tar.bz2
+Source0:        http://downloads.sourceforge.net/rusxmms/%{name}-%{version}.tar.bz2
 # To fix building against new version of glib
 Patch0:         %{name}-glib2-2.32.0.patch
+# To fix a compilation warning
+Patch1:         %{name}-rccstring.patch
 
 BuildRequires:  libxml2-devel
 BuildRequires:  enca-devel
 BuildRequires:  gtk2-devel
+BuildRequires:  aspell-devel
 
 %description
 The Abilities of LibRCC Library
@@ -27,7 +30,7 @@ The Abilities of LibRCC Library
 - Shared configuration file. For example mentioned TagLib and LibID3
   patches do not have their own user interface, but will utilize the
   same recoding configuration as XMMS.
-- As well the separate program for configuration adjustment is 
+- As well the separate program for configuration adjustment is
   available.
 - GTK2 UI Library: you can add properties page to your GTK application
   with 3 lines of code.
@@ -57,17 +60,18 @@ developing applications that use %{name}.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 # fix permissions
 chmod 644 examples/rusxmms_cache.pl
 
 %build
-%configure --disable-static
+%configure --disable-static --disable-libtranslate --disable-bdb
 make %{?_smp_mflags}
 
 
 %install
-make DESTDIR=$RPM_BUILD_ROOT install 
+make DESTDIR=$RPM_BUILD_ROOT install
 find $RPM_BUILD_ROOT -name '*.la' -delete
 
 
@@ -98,5 +102,11 @@ find $RPM_BUILD_ROOT -name '*.la' -delete
 %{_libdir}/librccgtk2.so
 
 %changelog
+* Fri Nov  2 2012 Ivan Romanov <drizt@land.ru> - 0.2.9-1
+- corrected Source0
+- add patch1
+- explicity turn off libtranslate and db4 support
+- added aspell to BR
+
 * Mon Oct 29 2012 Ivan Romanov <drizt@land.ru> - 0.2.9-1
 - initial version of package
