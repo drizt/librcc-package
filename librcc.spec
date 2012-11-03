@@ -1,6 +1,6 @@
 Name:           librcc
 Version:        0.2.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        RusXMMS Charset Conversion Library
 
 License:        LGPLv2+
@@ -66,7 +66,8 @@ developing applications that use %{name}.
 chmod 644 examples/rusxmms_cache.pl
 
 %build
-%configure --disable-static --disable-libtranslate --disable-bdb
+# LDFLAGS to prevent rpmlint W: unused-direct-shlib-dependency
+LDFLAGS="-Wl,--as-needed $RPM_LD_FLAGS" %configure --disable-static --disable-libtranslate --disable-bdb 
 make %{?_smp_mflags}
 
 
@@ -102,7 +103,10 @@ find $RPM_BUILD_ROOT -name '*.la' -delete
 %{_libdir}/librccgtk2.so
 
 %changelog
-* Fri Nov  2 2012 Ivan Romanov <drizt@land.ru> - 0.2.9-1
+* Sat Nov  3 2012 Ivan Romanov <drizt@land.ru> - 0.2.9-3
+- added LDFLAGS for %%configure
+
+* Fri Nov  2 2012 Ivan Romanov <drizt@land.ru> - 0.2.9-2
 - corrected Source0
 - add patch1
 - explicity turn off libtranslate and db4 support
